@@ -1,0 +1,36 @@
+name: 发布SDK包
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'example/**/*.yaml'  # 当OpenAPI规范文件更新时触发
+      - 'example/**/*.json'  # 当OpenAPI规范文件更新时触发
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v3
+
+      - name: 设置Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 生成SDK
+        run: npm run generate -- generate -i example/petstore.yaml -o sdk
+
+      - name: 运行测试
+        run: npm test
+
+      - name: 自动更新版本并发布
+        run: node scripts/publish.js patch
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

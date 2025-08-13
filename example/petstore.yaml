@@ -1,0 +1,232 @@
+openapi: 3.0.0
+info:
+  title: Swagger Petstore
+  description: 这是一个示例Petstore服务器。
+  version: 1.0.0
+  
+servers:
+  - url: https://petstore.swagger.io/v1
+
+tags:
+  - name: pet
+    description: 宠物相关操作
+  - name: store
+    description: 商店相关操作
+  - name: user
+    description: 用户相关操作
+
+paths:
+  /pets:
+    get:
+      summary: 列出所有宠物
+      description: 返回所有宠物的列表
+      operationId: listPets
+      tags:
+        - pet
+      parameters:
+        - name: limit
+          in: query
+          description: 返回宠物的最大数量
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: 成功返回宠物列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pets'
+    post:
+      summary: 创建宠物
+      description: 创建一个新的宠物
+      operationId: createPet
+      tags:
+        - pet
+      requestBody:
+        description: 要创建的宠物
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPet'
+      responses:
+        '201':
+          description: 成功创建宠物
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+  
+  /pets/{petId}:
+    get:
+      summary: 获取宠物信息
+      description: 返回单个宠物的详细信息
+      operationId: getPetById
+      tags:
+        - pet
+      parameters:
+        - name: petId
+          in: path
+          description: 宠物的ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功返回宠物信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+    delete:
+      summary: 删除宠物
+      description: 删除指定的宠物
+      operationId: deletePet
+      tags:
+        - pet
+      parameters:
+        - name: petId
+          in: path
+          description: 要删除的宠物ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: 成功删除宠物
+  
+  /stores/inventory:
+    get:
+      summary: 获取库存信息
+      description: 返回宠物商店的库存状态
+      operationId: getInventory
+      tags:
+        - store
+      responses:
+        '200':
+          description: 成功返回库存信息
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+  
+  /users:
+    post:
+      summary: 创建用户
+      description: 创建一个新用户
+      operationId: createUser
+      tags:
+        - user
+      requestBody:
+        description: 要创建的用户
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: 成功创建用户
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  
+  /users/{username}:
+    get:
+      summary: 获取用户信息
+      description: 获取指定用户的详细信息
+      operationId: getUserByName
+      tags:
+        - user
+      parameters:
+        - name: username
+          in: path
+          description: 用户名
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功返回用户信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+components:
+  schemas:
+    Pet:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 宠物ID
+        name:
+          type: string
+          description: 宠物名称
+        tag:
+          type: string
+          description: 宠物标签
+        status:
+          type: string
+          description: 宠物状态
+          enum:
+            - available
+            - pending
+            - sold
+    
+    NewPet:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: 宠物名称
+        tag:
+          type: string
+          description: 宠物标签
+    
+    Pets:
+      type: array
+      items:
+        $ref: '#/components/schemas/Pet'
+    
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 用户ID
+        username:
+          type: string
+          description: 用户名
+        firstName:
+          type: string
+          description: 名
+        lastName:
+          type: string
+          description: 姓
+        email:
+          type: string
+          description: 电子邮件
+        password:
+          type: string
+          description: 密码
+        phone:
+          type: string
+          description: 电话号码
+        userStatus:
+          type: integer
+          format: int32
+          description: 用户状态
